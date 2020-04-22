@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <title>HOME</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script type="text/javascript"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEdUREQ7fVkgNApeHbkPL-WxjK6QcQLoA&libraries=places"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+</head>
+
+<body>
+  <div ng-app="myApp" ng-controller="controller">
+    <div class="jumbotron jumbotron-fluid bg-primary">
+      <div class="container text-center">
+        <input id="city" ng-model="city" type="text" class="form-control form-control-lg"
+          placeholder="Enter the place" />
+        <button type="submit" ng-click="fetchWeatherDetails()" class="my-2 btn-lg btn-white text-primary">Weather
+          Report</button>
+      </div>
+    </div>
+    <div class="container text-center">
+      <h1 class="display-4">Weather Report of {{city}}</h1>
+
+      <div class="row  text-white border border-primary   justify-content-lg-between  ">
+        <div class="col-lg-3 px-3  bg-primary" ng-repeat="x in daily">
+          <div class="row justify-content-center bg-white text-primary ">
+            <h6>{{x.dt * 1000 | date:'dd-MM-yyyy HH:mm:ss'}}</h6>
+          </div>
+          <div class="row justify-content-center ">
+            <div class="col">
+              <p>Temperature</p>
+              <h1>{{x.temp.day || 0}} &deg C</h1>
+            </div>
+          </div>
+          <div class="row  text-center ">
+            <div class="col ">
+              <p>Rain</p>
+              <h3>{{x.rain || 0}} mm</h3>
+            </div>
+            <div class="col">
+              <p>Humidity</p>
+              <h3>{{x.humidity || 0}} %</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row    justify-content-lg-between  ">
+
+        <canvas class="my-5" id="temperature"></canvas>
+        <canvas class="my-5" id="humidity"></canvas>
+        <canvas class="my-5" id="Rain"></canvas>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <script>
+    var tChart = document.getElementById('temperature').getContext('2d');
+    var rChart = document.getElementById('Rain').getContext('2d');
+
+    var hChart = document.getElementById("humidity").getContext('2d');
+
+    var input = document.getElementById('city');
+    var autocomplete = new google.maps.places.Autocomplete((input), {
+      types: ['(cities)'],
+
+    });
+    var app = angular.module("myApp", []);
+    app.controller("controller", function ($scope, $http) {
+      $scope.drawCharts = function (l, h, t, r) {
+        var chart = new Chart(hChart, {
+          // The type of chart we want to create
+          type: 'line',
+
+          // The data for our dataset
+          data: {
+            labels: l,
+            datasets: [{
+              label: 'humidity(%)',
+              backgroundColor: 'rgb(3, 182, 252)',
+              borderColor: 'rgb(3, 182, 252)',
+              data: h
+            }
+            ]
+          },
+
+          // Configuration options go here
+          options: {}
+        });
+        var chart = new Chart(tChart, {
+          // The type of chart we want to create
+          type: 'line',
+
+          // The data for our dataset
+          data: {
+            labels: l,
+            datasets: [{
+              label: 'temperature(deg C)',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: t
+            }
+            ]
+          },
+
+          // Configuration options go here
+          options: {}
+        });
+        var chart = new Chart(rChart, {
+          // The type of chart we want to create
+          type: 'line',
+
+          // The data for our dataset
+          data: {
+            labels: l,
+            datasets: [{
+              label: 'Rain(mm)',
+              backgroundColor: 'rgb(3, 252, 157)',
+              borderColor: 'rgb(3, 252, 157)',
+              data: r
+            }
+            ]
+          },
+
+          // Configuration options go here
+          options: {}
+        });
+      }
+      $scope.fetchWeatherDetails = function () {
+        $scope.city = input.value;
+
+        var place = autocomplete.getPlace();
+        var latlng = place.geometry.location;
+        var lat = latlng.lat()
+        var lon = latlng.lng()
+        $http.get("http://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
+        ).success(function (data) {
+
+          $scope.daily = data.daily
+
+        });
+
+        var date = new Date();
+        date.setDate(date.getDate() - 5);
+
+        var time = Math.round(date.getTime() / 1000);
+
+        $http.get("http://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" + lat + "&lon=" + lon + "&dt=" + time + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
+        ).success(function (data) {
+
+          $scope.hourly = data.hourly
+          var labels = []
+          var humidity = []
+          var temperature = []
+          var Rain = []
+
+          for (let index = 0; index < $scope.hourly.length; index++) {
+            const element = $scope.hourly[index];
+            labels.push(new Date(element.dt * 1000).toDateString())
+            humidity.push(element.humidity)
+            temperature.push(element.temp)
+            Rain.push(element.rain)
+
+          }
+          $scope.drawCharts(labels, humidity, temperature, Rain)
+        });
+
+
+      }
+    });
+
+  </script>
+
+
+</body>
+
+</html>
