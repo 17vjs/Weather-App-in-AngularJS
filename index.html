@@ -89,6 +89,9 @@
       types: ['(cities)'],
 
     });
+    var lat = null;
+    var lon = null;
+
     var app = angular.module("myApp", []);
     app.controller("controller", function ($scope, $http) {
       $scope.drawCharts = function (l, h, t, r) {
@@ -152,46 +155,50 @@
       }
       $scope.fetchWeatherDetails = function () {
         $scope.city = input.value;
-
-        var place = autocomplete.getPlace();
-        var latlng = place.geometry.location;
-        var lat = latlng.lat()
-        var lon = latlng.lng()
-        $http.get("http://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
-        ).then(function (data) {
-
-          $scope.daily = data.daily
-
-        }, function (error) {
-          console.log(error);
-        });
-
         var date = new Date();
         date.setDate(date.getDate() - 5);
-
         var time = Math.round(date.getTime() / 1000);
+        $http.get("http://api.openweathermap.org/data/2.5/weather?q=" + $scope.city + "&appid=12e9803b205f1ddb6af5cf103746cf1f",
+        ).then(function (res) {
+          lat = res.data.coord.lat
+          lon = res.data.coord.lon
+          $http.get("http://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
+          ).then(function (resp) {
+            var d = resp.data
+            $scope.daily = d.daily
+          }, function (error) {
+            console.log(error);
+          });
 
-        $http.get("http://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" + lat + "&lon=" + lon + "&dt=" + time + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
-        ).then(function (data) {
+          $http.get("http://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" + lat + "&lon=" + lon + "&dt=" + time + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
+          ).then(function (resp) {
+            var d = resp.data
+            $scope.hourly = d.hourly
+            var labels = []
+            var humidity = []
+            var temperature = []
+            var Rain = []
 
-          $scope.hourly = data.hourly
-          var labels = []
-          var humidity = []
-          var temperature = []
-          var Rain = []
+            for (let index = 0; index < $scope.hourly.length; index++) {
+              const element = $scope.hourly[index];
+              labels.push(new Date(element.dt * 1000).toLocaleString())
+              humidity.push(element.humidity)
+              temperature.push(element.temp)
+              if (element.rain) {
+                Rain.push(element.rain["3h"])
 
-          for (let index = 0; index < $scope.hourly.length; index++) {
-            const element = $scope.hourly[index];
-            labels.push(new Date(element.dt * 1000).toDateString())
-            humidity.push(element.humidity)
-            temperature.push(element.temp)
-            Rain.push(element.rain)
-
-          }
-          $scope.drawCharts(labels, humidity, temperature, Rain)
+              } else {
+                Rain.push(0)
+              }
+            }
+            $scope.drawCharts(labels, humidity, temperature, Rain)
+          }, function (error) {
+            console.log(error);
+          });
         }, function (error) {
           console.log(error);
         });
+
 
 
       }
