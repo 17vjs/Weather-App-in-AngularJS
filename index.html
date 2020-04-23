@@ -158,10 +158,12 @@
         var lat = latlng.lat()
         var lon = latlng.lng()
         $http.get("http://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
-        ).success(function (data) {
+        ).then(function (data) {
 
           $scope.daily = data.daily
 
+        }, function (error) {
+          console.log(error);
         });
 
         var date = new Date();
@@ -170,7 +172,7 @@
         var time = Math.round(date.getTime() / 1000);
 
         $http.get("http://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" + lat + "&lon=" + lon + "&dt=" + time + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
-        ).success(function (data) {
+        ).then(function (data) {
 
           $scope.hourly = data.hourly
           var labels = []
@@ -187,6 +189,8 @@
 
           }
           $scope.drawCharts(labels, humidity, temperature, Rain)
+        }, function (error) {
+          console.log(error);
         });
 
 
