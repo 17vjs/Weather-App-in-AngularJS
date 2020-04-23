@@ -158,11 +158,11 @@
         var date = new Date();
         date.setDate(date.getDate() - 5);
         var time = Math.round(date.getTime() / 1000);
-        $http.get("http://api.openweathermap.org/data/2.5/weather?q=" + $scope.city + "&appid=12e9803b205f1ddb6af5cf103746cf1f",
+        $http.get("https://api.openweathermap.org/data/2.5/weather?q=" + $scope.city + "&appid=12e9803b205f1ddb6af5cf103746cf1f",
         ).then(function (res) {
           lat = res.data.coord.lat
           lon = res.data.coord.lon
-          $http.get("http://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
+          $http.get("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
           ).then(function (resp) {
             var d = resp.data
             $scope.daily = d.daily
@@ -170,7 +170,7 @@
             console.log(error);
           });
 
-          $http.get("http://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" + lat + "&lon=" + lon + "&dt=" + time + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
+          $http.get("https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" + lat + "&lon=" + lon + "&dt=" + time + "&units=metric&appid=12e9803b205f1ddb6af5cf103746cf1f",
           ).then(function (resp) {
             var d = resp.data
             $scope.hourly = d.hourly
