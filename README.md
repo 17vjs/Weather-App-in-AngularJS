@@ -28,4 +28,4 @@ I don't have a billing account of GCP. Therefore, the places may or may not be s
 ### Output
 * Try with places which have heavy rainfall so that you don't get blank precipitation chart. Eg. Mawsynram , Cherrapunji
 ![alt text](./images/image1.PNG "Screenshot")
-![alt text](./images/imgage2.png "Screenshot")
+![alt text](./images/image2.png "Screenshot")
