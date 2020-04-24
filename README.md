@@ -26,6 +26,5 @@ This is a web app for the weather forecast.
 I don't have a billing account of GCP. Therefore, the places may or may not be suggested in autocomplete based on daily free quota. Don't worry, you will still be able to get weather forecast of a place if you type a correct city name.
 
 ### Output
-Try with places which have heavy rainfall so that you don't get blank precipitation chart. 
-Eg. Mawsynram , Cherrapunji
-Find the complete working [here](https://17vjs.github.io/Weather-App-in-AngularJS/)
+* Try with places which have heavy rainfall so that you don't get blank precipitation chart. Eg. Mawsynram , Cherrapunji
+* Find the complete working [here](https://17vjs.github.io/Weather-App-in-AngularJS/)
